@@ -1,10 +1,11 @@
 package CSE5242.project;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.sql.ResultSetMetaData;
+import java.util.Set;
 
 public class Tuple {
 	private Map<String, Comparable<Object>> fields = new HashMap<String, Comparable<Object>>();
@@ -27,7 +28,17 @@ public class Tuple {
 		return fields.get(fieldName);
 	}
 	
-	public int compareTo(Tuple t, String fieldName) {
+	public int compareTo(Tuple t, String fieldName) { //TODO Decide how we want to handle null values
+//		System.out.println("Comparing field name " + fieldName + " of tuple " + this.get(fieldName) + "\nto tuple " + t.get(fieldName));
+		if (this.get(fieldName) == null) {
+			return (t.get(fieldName) == null ? 0 : -1);
+		} else if (t.get(fieldName) == null) {
+			return 1;
+		}
 		return this.get(fieldName).compareTo(t.get(fieldName));
+	}
+	
+	public Set<String> getColumnNames() {
+		return fields.keySet();
 	}
 }
