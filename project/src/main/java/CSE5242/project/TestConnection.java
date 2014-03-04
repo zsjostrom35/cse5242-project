@@ -21,13 +21,32 @@ public class TestConnection {
     public static void main( String[] args ) {
 	    try {
 	    	init();
-	    	TargetSet ts = new TargetSet(connection, "SELECT * FROM artist");
-	    	System.out.println(ts.generateWhereClauses(2));
+	    	String columnsAndTable = "SELECT * FROM invoice";
+	    	String query = columnsAndTable + " " +  "WHERE invoiceId IN (32, 184, 206, 390)";
+	    	System.out.println("Target set generated with query \"" + query + "\"");
+	    	TargetSet ts = new TargetSet(connection, query);
+	    	System.out.println(generateQuery(ts, columnsAndTable));
 	        connection.close();
 	    } catch (ClassNotFoundException e) {
 	        e.printStackTrace();
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
+    }
+    
+    private static String generateQuery(TargetSet ts, String columnsAndTable) throws SQLException {
+    	String query = "";
+    	for (int i = 0; i < ts.getSize(); i++) {
+//    	for (int i = 0; i < 2; i++) {
+    		for (String where : ts.generateWhereClauses(i)) {
+    			query = columnsAndTable + " " + where;
+    			if (ts.testQuery(connection, query)) {
+    				return query;
+    			} else {
+//    				System.out.println("Query " + query + " did not match the target set");
+    			}
+    		}
+    	}
+    	return "No query found";
     }
 }
